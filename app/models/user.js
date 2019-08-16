@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  name: {
+  _id: mongoose.Schema.Types.ObjectId,
+  fullname: {
     type: String,
     minlength: 5,
     required: true,
@@ -13,14 +14,9 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     minlength: 8,
-    required: true
-  },
-  rePassword: {
-    type: String,
-    minlength: 8,
+    maxlength: 14,
     required: true
   }
-
 },
 {
   timestamps: true,

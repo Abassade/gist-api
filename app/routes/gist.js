@@ -1,5 +1,6 @@
 const gistController = require('../controllers/gist');
-const routes = (app)=>{
+const auth = require('../middlewares/auth');
+const gist = (app)=>{
     
     app.all('/', (req, res)=>{
         res.send({
@@ -8,7 +9,7 @@ const routes = (app)=>{
         });
     })
     
-    app.post('/create-gist', (req, res)=>{
+    app.post('/create-gist', auth, (req, res)=>{
         gistController.createGist(req, res);
     });
 
@@ -22,4 +23,4 @@ const routes = (app)=>{
       
 }
 
-module.exports = routes;
+module.exports = gist;

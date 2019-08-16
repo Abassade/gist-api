@@ -30,7 +30,7 @@ class Gist {
                 let gist = new gistModel({
                     title: req.body.title,
                     description: req.body.description,
-                    gistImageUrl: image.url
+                    gistImageUrl: image.url !== null ? image.url : ''
                 });
                 gist.save()
                 .then( data =>{
@@ -39,7 +39,7 @@ class Gist {
                         error: false,
                         message: 'gist created',
                         response: data
-                    })
+                    });
                 }).catch( error =>{
                     res.json({
                         error: true,
