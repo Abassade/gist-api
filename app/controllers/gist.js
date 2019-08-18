@@ -2,6 +2,8 @@
 const multer = require('multer');
 const gistService = require('../services/gist');
 const gistModel = require('../models/gist');
+const mongoose = require('mongoose');
+const fs = require('fs');
 const storage =   multer.diskStorage({
 	destination: (req, file, callback) => {
 		callback(null, './uploads');
@@ -15,22 +17,37 @@ const upload = multer({ storage }).single("file");
 class Gist {
     createGist(req, res){
         upload(req, res, (err) => {
+            if(!req.file){
+                return res.json({
+                    error: true,
+                    message: 'ensure you upload file from formdata'
+                }); 
+            }
+            const path = req.file.path;
+            const {title, description, user, likes} = req.body;
+            if(!title || !description){
+                // delete the file uploaded to the server
+                fs.unlinkSync(path);
+                return res.json({
+                    error: true,
+                    message: 'oga pass the required fields'
+                }); 
+            }
             if (err) {
               console.log('eror while uploading', err);
               return res.json({
                 error: true,
                 message: 'eror while uploading',
                 response: err
-            })
+            });
             }
             console.log('file uploaded to server');
-            const path = req.file.path;
             gistService.uploadToCloud(path)
             .then( image =>{
                 let gist = new gistModel({
-                    title: req.body.title,
-                    description: req.body.description,
-                    gistImageUrl: image.url !== null ? image.url : ''
+                    user, title, description, likes,
+                    gistImageUrl: image.url !== null ? image.url :
+                     'default_image_path'
                 });
                 gist.save()
                 .then( data =>{
@@ -50,7 +67,7 @@ class Gist {
             }).catch( error =>{
                 res.json(error);
             })
-          });
+          });   // end upload
           
     }
 
@@ -63,6 +80,9 @@ class Gist {
         }
         const id = req.params.id;
         gistModel.findById(id)
+        .populate('user', 'fullname')
+        .select({"__v":0, })
+        .exec()
         .then( gist =>{
             res.send({
                 error: false,
@@ -81,9 +101,13 @@ class Gist {
 
     getAllGist(req, res){
         gistModel.find()
+        .populate('user', 'fullname')
+        .select({"__v":0, })
+        .exec()
         .then( gists =>{
             res.send({
                 error: false,
+                totalCount: gists.length,
                 message: 'successfully fetched all gists',
                 response: gists
             });

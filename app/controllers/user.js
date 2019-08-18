@@ -46,6 +46,7 @@ class UserController{
                         
                         return res.status(200).json({
                             error: false,
+                            userId: user._id,
                             message: 'You logged in succesfully',
                             token: token
                         });
@@ -72,13 +73,20 @@ class UserController{
      * @param res server returns the response back to the client
      */
     signUp(req, res){
-        if(!validator.isEmail(req.body.email)){
+        const {fullname, email} = req.body;
+            if(!fullname || !email){
+                return res.json({
+                    error: true,
+                    message: 'oga pass the required fields'
+                }); 
+            }
+        if(!validator.isEmail(email)){
             return res.status(401).json({
                 error: true,
                 message: 'your email is not correct'
             });
         }
-        User.findOne({email: req.body.email})
+        User.findOne({email})
         .exec().then( data =>{
             if(data){
                 res.status(409).json({
@@ -95,6 +103,7 @@ class UserController{
                     }
                     else {
                         let user = new User({
+                            _id: new mongoose.Types.ObjectId(),
                             fullname: req.body.fullname,
                             email: req.body.email,
                             password: hpass
@@ -144,8 +153,7 @@ class UserController{
                     userId: user._id,
                     lastname: lastname,
                     firstname: firstname,
-                    initials: `${lastname[0].toString().toUpperCase()}
-                    .${firstname[0].toString().toUpperCase()}`,
+                    initials: `${lastname[0].toString().toUpperCase()}.${firstname[0].toString().toUpperCase()}`,
                     email: user.email,
                     createdAt: user.createdAt,
                     updatedAt: user.updatedAt
@@ -154,6 +162,7 @@ class UserController{
             res.status(200).json({
                 error: false,
                 message: `users fetched successfully`,
+                totalCount: users.length,
                 respone: data
             });
         })

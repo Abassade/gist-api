@@ -10,7 +10,7 @@ const mongoose = require('mongoose');
 
 app.use(cors());
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/gist', { useNewUrlParser: true })
+mongoose.connect(process.env.MONGO_DB_URL, { useNewUrlParser: true })
 .then( db =>{
     console.log('mongodb connected');
 }).catch(error=>{

@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   fullname: {
     type: String,
     minlength: 5,
+    match: /^([a-zA-Z]{2,}\s[a-zA-z]{1,}'?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)/,
     required: true,
   },
   email: {
@@ -13,8 +14,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    minlength: 8,
-    maxlength: 14,
+    minlength: 7,
     required: true
   }
 },

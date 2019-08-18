@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const gistSchema = new mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
   user: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User'
+    ref: 'User',
+    required: true
 },
   title: {
     type: String,
@@ -21,12 +21,12 @@ const gistSchema = new mongoose.Schema({
   likes: {
     type: Number,
     default: 0,
-    validate: {
-      validator: (like)=> {
-          return typeof like === Number;
-      },
-      message: 'likes must be of type (Number)'
-  }
+  //   validate: {
+  //     validator: (like)=> {
+  //         return typeof like === Number;
+  //     },
+  //     message: 'likes must be of type (Number)'
+  // }
   }
 
 },
