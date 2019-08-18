@@ -1,21 +1,12 @@
-FROM alpine
+FROM node:10
 
-RUN cd /
+WORKDIR /usr/src/app
 
-RUN mkdir -p production/app
-
-WORKDIR /production
-
-ADD package.json /production/package.json
-
-ADD run.sh /production/run.sh
-
-ADD app /production/app
-
-RUN chmod u+x run.sh
+COPY package*.json ./
 
 RUN npm install
 
-EXPOSE 8888
+COPY . .
 
-CMD ./run.sh
+EXPOSE 8080
+CMD [ "node", "index.js" ]
