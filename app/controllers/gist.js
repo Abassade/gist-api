@@ -78,7 +78,7 @@ class Gist {
                 message: 'oga pass the id joor',
             });
         }
-        const id = req.params.id;
+        const {id} = req.params;
         gistModel.findById(id)
         .populate('user', 'fullname')
         .select({"__v":0, })
