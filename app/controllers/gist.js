@@ -1,8 +1,6 @@
-// MULTER
 const multer = require('multer');
 const gistService = require('../services/gist');
 const gistModel = require('../models/gist');
-const mongoose = require('mongoose');
 const fs = require('fs');
 const storage =   multer.diskStorage({
 	destination: (req, file, callback) => {
@@ -23,8 +21,9 @@ class Gist {
                     message: 'ensure you upload file from formdata'
                 }); 
             }
-            const path = req.file.path;
-            const {title, description, user, likes} = req.body;
+            const {path} = req.file;
+            let  {title, description, user, likes} = req.body;
+            user = req.token;
             if(!title || !description){
                 // delete the file uploaded to the server
                 fs.unlinkSync(path);
@@ -113,6 +112,33 @@ class Gist {
             });
         })
         .catch( error =>{
+            res.send({
+                error: true,
+                message: 'error while querying gists mongodb',
+                response: error
+            });
+        });
+    }
+
+    // TODO: make a route to get by by username
+    getGistsByUserId(req, res){
+        let {user} = req.query;
+        gistModel.find({user})
+        .then( gists =>{
+            res.send({
+                error: false,
+                totalCount: gists.length,
+                message: 'successfully fetched all gists',
+                response: gists
+            });
+        })
+        .catch( error =>{
+            if(error.name === 'CastError'){
+                return res.send({
+                    error: false,
+                    message: `no gists found for user ${user}`
+                });
+            }
             res.send({
                 error: true,
                 message: 'error while querying gists mongodb',

@@ -20,6 +20,10 @@ const gist = (app)=>{
     app.get('/gist/:id', (req, res)=>{
         gistController.getGist(req, res);
     });
+
+    app.get('/gist', (req, res)=>{
+        gistController.getGistsByUserId(req, res);
+    });
       
 }
 

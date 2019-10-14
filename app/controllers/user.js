@@ -44,11 +44,12 @@ class UserController{
                               }
                         );
                         
-                        return res.status(200).json({
+                        return res.status(200).
+                        cookie('auth', token).
+                        json({
                             error: false,
                             userId: user._id,
-                            message: 'You logged in succesfully',
-                            token: token
+                            message: 'You logged in succesfully'
                         });
                     }
                     else{
